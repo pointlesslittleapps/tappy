@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>tappy — pointless little apps</title>
+<meta name="description" content="one tally mark per tap. that is the entire app.">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&amp;display=swap">
+<link rel="stylesheet" href="../style.css">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<style>
+  #tappyBox{ cursor:pointer; user-select:none; -webkit-user-select:none; }
+  #tappyBox:focus-visible{ outline: 2px solid currentColor; outline-offset: 3px; }
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="../index.html">pointless little apps<span class="cur"></span></a>
+  <nav>
+    <a href="../index.html">apps</a>
+    <a href="../about.html">about</a>
+  </nav>
+</header>
+<main>
+  <a class="back" href="../index.html">&lt; back to all apps</a>
+
+  <section class="app-hero">
+    <div class="label">app 05 · web · try it</div>
+    <h1>tappy</h1>
+    <p>one tally mark per tap. make more counters if you need to. that is the entire app.</p>
+    <!-- box-drawing panel: every row is exactly 31 characters. keep it that way or the frame breaks. -->
+    <iframe src="apps/tappy-app.html"
+                width="100%"
+                height="350"
+                style="border: 1px solid #1d3a25; background: #0a0f0b;">
+        </iframe>
+    <div class="row-btns">
+      <a class="btn" href="apps/tappy-app.html" target="_blank">[save a tappy tab ]</a>
+      <a class="btn btn-quiet" href="#">[ someday i'll git it here ]</a>
+    </div>
+  </section>
+
+  <section class="story">
+    <div class="label">the story</div>
+    <div class="body">
+      <p>i needed to count something and i didn't have enough fingers. tap anywhere with a mouse or a finger, get a tally mark.</p>
+      <p>it forgets everything when you close the tab, which is either a bug or the point.</p>
+    </div>
+    <div class="facts">
+      <div><span class="k">built</span><span class="v">2026</span></div>
+      <div><span class="k">users</span><span class="v">about as many as you would expect</span></div>
+      <div><span class="k">status</span><span class="v warn">ready to keep score</span></div>
+    </div>
+  </section>
+
+  <a class="next" href="imaginary-friends.html">
+    <span><span class="k">next</span><span class="n">imaginary friends</span></span>
+    <span>&gt;</span>
+  </a>
+</main>
+<footer class="status">
+  <span>tappy</span>
+  <span>12 apps · because i can</span>
+  <span>hosted on one droplet</span>
+</footer>
+
+<script>
+(function(){
+  var box = document.getElementById('tappyBox');
+  var tapBtn = document.getElementById('tapBtn');
+  var resetBtn = document.getElementById('resetBtn');
+  var count = 0;
+  var WIDTH = 29;
+  var GROUPS_PER_ROW = 4; // "||||/ " is 6 chars, 4 fit in 29 with room to spare
+
+  function padRow(text){
+    text = text.length > WIDTH ? text.slice(0, WIDTH) : text + ' '.repeat(WIDTH - text.length);
+    return '\u2502' + text + '\u2502';
+  }
+
+  function tallyRows(n){
+    var fullGroups = Math.floor(n / 5);
+    var remainder = n % 5;
+    var groups = [];
+    for (var i = 0; i < fullGroups; i++) groups.push('||||/');
+    if (remainder > 0) groups.push('|'.repeat(remainder));
+    if (groups.length === 0) return [' '];
+
+    var rows = [];
+    for (var j = 0; j < groups.length; j += GROUPS_PER_ROW) {
+      rows.push(groups.slice(j, j + GROUPS_PER_ROW).join(' '));
+    }
+    return rows;
+  }
+
+  function render(){
+    var top = '\u250c\u2500 tappy \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2510';
+    var bottom = '\u2514' + '\u2500'.repeat(29) + '\u2518';
+    var rows = tallyRows(count);
+    var lines = [top];
+    rows.forEach(function(r){ lines.push(padRow(' ' + r)); });
+    lines.push(padRow(' ' + count));
+    lines.push(bottom);
+    box.textContent = lines.join('\n');
+  }
+
+  function tap(){
+    count++;
+    render();
+  }
+
+  function reset(){
+    count = 0;
+    render();
+  }
+
+  box.addEventListener('click', tap);
+  box.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){
+      e.preventDefault();
+      tap();
+    }
+  });
+  tapBtn.addEventListener('click', function(e){ e.preventDefault(); tap(); });
+  resetBtn.addEventListener('click', function(e){ e.preventDefault(); reset(); });
+
+  render();
+})();
+</script>
+</body>
+</html>
